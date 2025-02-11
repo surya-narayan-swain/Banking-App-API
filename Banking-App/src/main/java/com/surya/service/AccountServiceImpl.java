@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.surya.dto.AccountDto;
 import com.surya.entity.Account;
+import com.surya.exception.AccountException;
 import com.surya.mapper.AccountMapper;
 import com.surya.repository.AccountRepository;
 
@@ -27,14 +28,18 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public AccountDto getAccountById(long id) {
 		
-		Account account= accountRepository.findById(id).orElseThrow(()->new RuntimeException("Account does not Exists.."));
+		Account account= accountRepository
+				.findById(id)
+				.orElseThrow(()->new AccountException("Account does not Exists.."));
 		
 		return AccountMapper.mapToAccountDto(account);
 	}
 	
 	@Override
 	public AccountDto deposit(long id, double amount) {
-		Account account= accountRepository.findById(id).orElseThrow(()->new RuntimeException("Account does not Exists.."));
+		Account account= accountRepository.
+				findById(id).
+				orElseThrow(()->new AccountException("Account does not Exists.."));
 		double total=account.getBalance()+amount;
 		account.setBalance(total);
 		Account savedAccount=accountRepository.save(account);
@@ -43,7 +48,9 @@ return AccountMapper.mapToAccountDto(savedAccount);
 	
 	@Override
 	public AccountDto withdraw(long id, double amount) {
-		Account account= accountRepository.findById(id).orElseThrow(()->new RuntimeException("Account does not Exists.."));
+		Account account= accountRepository
+				.findById(id)
+				.orElseThrow(()->new AccountException("Account does not Exists.."));
 if(account.getBalance()<amount)
 {
 	throw new RuntimeException("insufficient account");
@@ -67,7 +74,7 @@ Account savedAccount=accountRepository.save(account);
 	public void deleteAccount(long id) {
 		Account account= accountRepository
 				.findById(id)
-				.orElseThrow(()->new RuntimeException("Account does not Exists.."));
+				.orElseThrow(()->new AccountException("Account does not Exists.."));
 accountRepository.deleteById(id);
 		
 	}
